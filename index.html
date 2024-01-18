@@ -14,12 +14,11 @@
     <div class="nav-bar"></div>
     <div id="app">
         <div class="cart">
-            <p>Cart({{ cart.lenght }})</p>
+            <p>Cart({{ cart.length }})</p>
         </div>
+        <product :premium="premium" @add-to-cart="updateCart" @remove-from-cart="removeCart"></product>
     </div>
     <script src="./js/main.js"></script>
-    <product :premium="premium" @add-to-cart="updateCart" @remove-from-cart="removeCart"></product>
-
-
 </body>
+
 </html>

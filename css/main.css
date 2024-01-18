@@ -27,6 +27,7 @@ img {
     flex-basis: 700px;
 }
 
+.product-image,
 .product-info {
     margin-top: 10px;
     width: 50%;
