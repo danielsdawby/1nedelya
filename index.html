@@ -1,13 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <link rel="stylesheet" href="css/main.css">
     <script src="./js/vue.js"></script>
-  
+
 </head>
+
 <body>
     <div id="app">
         <div class="product">
@@ -20,18 +22,27 @@
                 <a :href="link" target="_blank">More products like this</a>
                 <span v-if="onSale">On Sale!</span>
                 <p v-if="inventory > 10">In stock</p>
+                <p v-else>Out of stock</p>
+                <p v-else-if="inventory <= 10 && inventory > 0">Almost sold out!</p>
                 <ul>
                     <li v-for="detail in details">{{ detail }}</li>
                 </ul>
+                <ul>
+                    <li v-for="size in sizes">{{ size }}</li>
+                </ul>
                 <div v-for="variant in variants" :key="variant.variantId">
                     <p>{{ variant.variantColor }}</p>
-                </div>                    
-                <p v-else-if="inventory <= 10 && inventory > 0">Almost sold out!</p>
-                <p v-else>Out of stock</p>
+                </div>
+                <button v-on:click="addToCart">Add to cart</button>
+                <button @click="removeFromCart">Remove from cart</button>
+
+                <div class="cart">
+                    <p>Cart({{ cart }})</p>
+                </div>
             </div>
         </div>
-    </div>
-    <script src="./js/main.js"></script>
+        <script src="./js/main.js"></script>
 
 </body>
+
 </html>
