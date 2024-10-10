@@ -7,24 +7,21 @@ Vue.component('product', {
     },
     template: `
         <div class="product">
-     
             <div class="product-image">
                 <img id="img" v-bind:alt="altText" v-bind:src="image"/>
             </div>
-     
             <div class="product-info">
                 <h1>{{ title }}</h1>
                 <p v-if="onSale">on sale</p>
                 <p v-if="inStock">In stock</p>
                 <p v-else :class="{ outOfStock: !inStock }">Out of Stock</p>
-                <div class="color-box" @mouseover="updateProduct(index)" :style="{ backgroundColor:variant.variantColor }" v-for="(variant, index) in variants" :key="variant.variantId"></div>
+                <div class="color-box" @mouseover="updateProduct(index)" :style="{ backgroundColor: variant.variantColor }" v-for="(variant, index) in variants" :key="variant.variantId"></div>
                 <div v-for="size in sizes">
                     <p>{{ size }}</p>
                 </div>
 
                 <button v-on:click="addToCart" :disabled="!inStock" :class="{ disabledButton: !inStock }">Add to cart</button>
                 <button v-on:click="removeFromCart">remove from cart</button>
-
             </div>
 
             <div>
@@ -36,7 +33,7 @@ Vue.component('product', {
         return {
             product: "Socks",
             brand: "Vue Mastery",
-            desc: " A pair of warm, fuzzy socks. ",
+            desc: "A pair of warm, fuzzy socks.",
             altText: "A pair of socks",
             link: "https://www.amazon.com/s/ref=nb_sb_noss?url=search-alias%3Daps&field-keywords=socks",
             linkText: "More products like this",
@@ -48,6 +45,7 @@ Vue.component('product', {
                     variantImage: "./assets/vmSocks-green-onWhite.jpg",
                     variantQuantity: 10,
                     variantSale: true,
+                    maxQuantity: 10 
                 },
                 {
                     variantId: 2235,
@@ -55,23 +53,40 @@ Vue.component('product', {
                     variantImage: "./assets/vmSocks-blue-onWhite.jpg",
                     variantQuantity: 10,
                     variantSale: true,
+                    maxQuantity: 15 
                 }
             ],
             sizes: ['S', 'M', 'L', 'XL', 'XXL', 'XXXL'],
-            cart: 0,
+            cart: {},
             selectedVariant: 0,
             reviews: []
         }
     },
     methods: {
         addToCart() {
-            this.$emit('add-to-cart', this.variants[this.selectedVariant].variantId);
+            const variantId = this.variants[this.selectedVariant].variantId;
+            const currentCount = this.cart[variantId] || 0;
+            const maxQuantity = this.variants[this.selectedVariant].maxQuantity;
+
+            if (currentCount < maxQuantity) {
+                this.$emit('add-to-cart', variantId);
+                this.cart[variantId] = currentCount + 1; // 
+            } else {
+                alert(`Вы можете добавить ${maxQuantity} ${this.variants[this.selectedVariant].variantColor} носков в корзину.`);
+            }
         },
         updateProduct(index) {
-            this.selectedVariant = index
+            this.selectedVariant = index;
         },
         removeFromCart() {
-            this.$emit('remove-from-cart', this.variants[this.selectedVariant].variantId);
+            const variantId = this.variants[this.selectedVariant].variantId;
+            this.$emit('remove-from-cart', variantId);
+            if (this.cart[variantId]) {
+                this.cart[variantId]--; // 
+                if (this.cart[variantId] === 0) {
+                    delete this.cart[variantId]; 
+                }
+            }
         },
     },
     computed: {
@@ -82,26 +97,22 @@ Vue.component('product', {
             return this.variants[this.selectedVariant].variantImage;
         },
         inStock() {
-            return this.variants[this.selectedVariant].variantQuantity
+            return this.variants[this.selectedVariant].variantQuantity > 0;
         },
         onSale() {
             return this.variants[this.selectedVariant].variantSale;
         },
         shipping() {
-            if (this.premium) {
-                return "free";
-            }
-            else {
-                return 2.99
-            }
+            return this.premium ? "free" : 2.99;
         }
     },
     mounted() {
         eventBus.$on('review-submitted', productReview => {
-            this.reviews.push(productReview)
-        })
+            this.reviews.push(productReview);
+        });
     }
-})
+});
+
 
 Vue.component('product-detail', {
     template: `
